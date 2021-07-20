@@ -43,7 +43,7 @@ The Kubernetes Ingress Controller, The Custom Resource Way.
           serviceAccountName: traefik-ingress-controller
           containers:
             - name: traefik
-              image: traefik:v2.4
+              image: traefik:v2.5
               args:
                 - --log.level=DEBUG
                 - --api
@@ -386,7 +386,7 @@ Register the `IngressRoute` [kind](../../reference/dynamic-configuration/kuberne
     apiVersion: traefik.containo.us/v1alpha1
     kind: IngressRoute
     metadata:
-      name: testName
+      name: test-name
       namespace: default
     spec:
       entryPoints:
@@ -1203,7 +1203,7 @@ Register the `IngressRouteTCP` [kind](../../reference/dynamic-configuration/kube
     
     ??? example "Examples"
         
-        ```yaml tab="IngressRouteTCP"
+        ```yaml tab="Only on IngressRouteTCP"
         ---
         apiVersion: traefik.containo.us/v1alpha1
         kind: IngressRouteTCP
@@ -1233,38 +1233,7 @@ Register the `IngressRouteTCP` [kind](../../reference/dynamic-configuration/kube
           type: ExternalName
         ```
         
-        ```yaml tab="ExternalName Service"
-        ---
-        apiVersion: traefik.containo.us/v1alpha1
-        kind: IngressRouteTCP
-        metadata:
-          name: test.route
-          namespace: default
-        
-        spec:
-          entryPoints:
-            - foo
-        
-          routes:
-          - match: HostSNI(`*`)
-            kind: Rule
-            services:
-            - name: external-svc
-        
-        ---
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: external-svc
-          namespace: default
-        spec:
-          externalName: external.domain
-          type: ExternalName
-          ports:
-            - port: 80
-        ```
-        
-        ```yaml tab="Both sides"
+        ```yaml tab="On both sides"
         ---
         apiVersion: traefik.containo.us/v1alpha1
         kind: IngressRouteTCP
@@ -1476,8 +1445,8 @@ or referencing TLS options in the [`IngressRoute`](#kind-ingressroute) / [`Ingre
         - TLS_RSA_WITH_AES_256_GCM_SHA384
       clientAuth:                                   # [5]
         secretNames:                                # [6]
-          - secretCA1
-          - secretCA2
+          - secret-ca1
+          - secret-ca2
         clientAuthType: VerifyClientCertIfGiven     # [7]
       sniStrict: true                               # [8]
     ```
@@ -1514,8 +1483,8 @@ or referencing TLS options in the [`IngressRoute`](#kind-ingressroute) / [`Ingre
         - TLS_RSA_WITH_AES_256_GCM_SHA384
       clientAuth:
         secretNames:
-          - secretCA1
-          - secretCA2
+          - secret-ca1
+          - secret-ca2
         clientAuthType: VerifyClientCertIfGiven
     ```
     
@@ -1544,7 +1513,7 @@ or referencing TLS options in the [`IngressRoute`](#kind-ingressroute) / [`Ingre
     apiVersion: v1
     kind: Secret
     metadata:
-      name: secretCA1
+      name: secret-ca1
       namespace: default
     
     data:
@@ -1555,7 +1524,7 @@ or referencing TLS options in the [`IngressRoute`](#kind-ingressroute) / [`Ingre
     apiVersion: v1
     kind: Secret
     metadata:
-      name: secretCA2
+      name: secret-ca2
       namespace: default
     
     data:
@@ -1596,7 +1565,7 @@ or referencing TLS stores in the [`IngressRoute`](#kind-ingressroute) / [`Ingres
     
     spec:
       defaultCertificate:
-        secretName: mySecret                      # [1]
+        secretName: my-secret                      # [1]
     ```
 
 | Ref | Attribute    | Purpose                                                                                                                                                     |
@@ -1679,19 +1648,21 @@ or referencing TLS stores in the [`IngressRoute`](#kind-ingressroute) / [`Ingres
         dialTimeout: 42s               # [7]
         responseHeaderTimeout: 42s     # [8]
         idleConnTimeout: 42s           # [9]
+      peerCertURI: foobar              # [10]
     ```
 
-| Ref | Attribute               | Purpose                                                                                                                                              |
-|-----|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [1] | `serverName`            | ServerName used to contact the server.                                                                                                               |
-| [2] | `insecureSkipVerify`    | Disable SSL certificate verification.                                                                                                                |
-| [3] | `rootCAsSecrets`        | Add cert file for self-signed certificate. The secret must contain a certificate under either a tls.ca or a ca.crt key.                              |
-| [4] | `certificatesSecrets`   | Certificates for mTLS.                                                                                                                               |
-| [5] | `maxIdleConnsPerHost`   | If non-zero, controls the maximum idle (keep-alive) to keep per-host. If zero, `defaultMaxIdleConnsPerHost` is used.                                 |
-| [6] | `forwardingTimeouts`    | Timeouts for requests forwarded to the backend servers.                                                                                              |
-| [7] | `dialTimeout`           | The amount of time to wait until a connection to a backend server can be established. If zero, no timeout exists.                                    |
-| [8] | `responseHeaderTimeout` | The amount of time to wait for a server's response headers after fully writing the request (including its body, if any). If zero, no timeout exists. |
-| [9] | `idleConnTimeout`       | The maximum period for which an idle HTTP keep-alive connection will remain open before closing itself.                                              |
+| Ref  | Attribute               | Purpose                                                                                                                                              |
+|------|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [1]  | `serverName`            | ServerName used to contact the server.                                                                                                               |
+| [2]  | `insecureSkipVerify`    | Disable SSL certificate verification.                                                                                                                |
+| [3]  | `rootCAsSecrets`        | Add cert file for self-signed certificate. The secret must contain a certificate under either a tls.ca or a ca.crt key.                              |
+| [4]  | `certificatesSecrets`   | Certificates for mTLS.                                                                                                                               |
+| [5]  | `maxIdleConnsPerHost`   | If non-zero, controls the maximum idle (keep-alive) to keep per-host. If zero, `defaultMaxIdleConnsPerHost` is used.                                 |
+| [6]  | `forwardingTimeouts`    | Timeouts for requests forwarded to the backend servers.                                                                                              |
+| [7]  | `dialTimeout`           | The amount of time to wait until a connection to a backend server can be established. If zero, no timeout exists.                                    |
+| [8]  | `responseHeaderTimeout` | The amount of time to wait for a server's response headers after fully writing the request (including its body, if any). If zero, no timeout exists. |
+| [9]  | `idleConnTimeout`       | The maximum period for which an idle HTTP keep-alive connection will remain open before closing itself.                                              |
+| [10] | `peerCertURI`           | URI used to match with service certificate.                                                                                                          |
 
 !!! info "CA Secret"
 

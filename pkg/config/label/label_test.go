@@ -625,7 +625,7 @@ func TestDecodeConfiguration(t *testing.T) {
 								Port:   "8080",
 							},
 						},
-						HealthCheck: &dynamic.HealthCheck{
+						HealthCheck: &dynamic.ServerHealthCheck{
 							Scheme:   "foobar",
 							Path:     "foobar",
 							Port:     42,
@@ -652,7 +652,7 @@ func TestDecodeConfiguration(t *testing.T) {
 								Port:   "8080",
 							},
 						},
-						HealthCheck: &dynamic.HealthCheck{
+						HealthCheck: &dynamic.ServerHealthCheck{
 							Scheme:   "foobar",
 							Path:     "foobar",
 							Port:     42,
@@ -675,6 +675,7 @@ func TestDecodeConfiguration(t *testing.T) {
 		},
 	}
 
+	assert.Nil(t, configuration.HTTP.ServersTransports)
 	assert.Equal(t, expected, configuration)
 }
 
@@ -1100,7 +1101,7 @@ func TestEncodeConfiguration(t *testing.T) {
 								Port:   "8080",
 							},
 						},
-						HealthCheck: &dynamic.HealthCheck{
+						HealthCheck: &dynamic.ServerHealthCheck{
 							Scheme:   "foobar",
 							Path:     "foobar",
 							Port:     42,
@@ -1126,7 +1127,7 @@ func TestEncodeConfiguration(t *testing.T) {
 								Port:   "8080",
 							},
 						},
-						HealthCheck: &dynamic.HealthCheck{
+						HealthCheck: &dynamic.ServerHealthCheck{
 							Scheme:   "foobar",
 							Path:     "foobar",
 							Port:     42,
